@@ -1,11 +1,27 @@
 const frames = {
   purple: {
-    portrait: {src:"assets/frame-purple-portrait.png", ratio:"434 / 523", win:[72/434,84/523,286/434,299/523]},
-    landscape:{src:"assets/frame-purple-landscape.png",ratio:"759 / 523",win:[98/759,79/523,563/759,306/523]}
+    portrait: {
+      src:"frame-purple-portrait.png",
+      ratio:"434 / 523",
+      win:[72/434,84/523,286/434,299/523]
+    },
+    landscape: {
+      src:"frame-purple-landscape.png",
+      ratio:"759 / 523",
+      win:[98/759,79/523,563/759,306/523]
+    }
   },
   blue: {
-    portrait: {src:"assets/frame-blue-portrait.png",ratio:"434 / 485",win:[71/434,79/485,287/434,281/485]},
-    landscape:{src:"assets/frame-blue-landscape.png",ratio:"760 / 485",win:[99/760,53/485,563/760,304/485]}
+    portrait: {
+      src:"frame-blue-portrait.png",
+      ratio:"434 / 485",
+      win:[71/434,79/485,287/434,281/485]
+    },
+    landscape: {
+      src:"frame-blue-landscape.png",
+      ratio:"760 / 485",
+      win:[99/760,53/485,563/760,304/485]
+    }
   }
 };
 let theme="purple", orientation="portrait", stream=null, facing="user", galleryFile=null, deferredInstall=null, resultUrl=null;
