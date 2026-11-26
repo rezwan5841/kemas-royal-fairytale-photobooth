@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#20144b">
+  <meta name="description" content="Photobooth Digital KEMAS STAR AWARDS 2026 - Royal Fairytale">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <title>KEMAS STAR AWARDS 2026 | Royal Fairytale Photobooth</title>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="sparkle">✦ ✧ ✦</div>
+      <p class="eyebrow">TABIKA KEMAS PPAK PARIT NIBONG</p>
+      <h1>KEMAS STAR AWARDS 2026</h1>
+      <p class="tagline">A Star Is Born – Bintang Kecil</p>
+      <p class="date">22 NOVEMBER 2026</p>
+    </header>
+
+    <section id="home" class="panel">
+      <h2>Selamat Datang ke Istana Ajaib!</h2>
+      <p class="muted">Abadikan kenangan indah anda bersama bingkai Royal Fairytale.</p>
+      <label for="theme">Pilih warna bingkai</label>
+      <div class="choice-row">
+        <button class="choice active" data-theme="purple">💜 Ungu</button>
+        <button class="choice" data-theme="blue">💙 Biru</button>
+      </div>
+      <label for="orientation">Pilih bentuk gambar</label>
+      <div class="choice-row">
+        <button class="choice active" data-orientation="portrait">Potret</button>
+        <button class="choice" data-orientation="landscape">Landskap</button>
+      </div>
+      <div class="frame-preview-wrap">
+        <img id="homeFrame" class="home-frame" src="assets/frame-purple-portrait.png" alt="Pratonton bingkai Royal Fairytale">
+      </div>
+      <button id="startBtn" class="primary">Mula Bergambar ✨</button>
+      <p id="installHelp" class="small muted">Untuk pengalaman terbaik, buka menggunakan Chrome dan benarkan akses kamera.</p>
+      <button id="installBtn" class="secondary hidden">Pasang Aplikasi</button>
+      <p id="iosHelp" class="small muted hidden">iPhone: tekan Share → Add to Home Screen untuk letak aplikasi di skrin utama.</p>
+    </section>
+
+    <section id="camera" class="panel hidden">
+      <h2>Senyum ke Kamera!</h2>
+      <div class="stage" id="stage">
+        <div class="photo-window" id="photoWindow">
+          <video id="video" autoplay playsinline muted></video>
+          <img id="galleryPreview" class="hidden" alt="Foto pilihan">
+        </div>
+        <img id="cameraFrame" class="frame-overlay" src="" alt="Bingkai photobooth">
+        <div id="countdown" class="countdown hidden"></div>
+      </div>
+      <p id="cameraStatus" class="small muted">Benarkan akses kamera apabila diminta.</p>
+      <div class="controls">
+        <button id="switchBtn" class="secondary">Tukar Kamera</button>
+        <button id="galleryBtn" class="secondary">Galeri</button>
+        <input id="galleryInput" type="file" accept="image/*" class="hidden">
+      </div>
+      <label for="zoom">Zum gambar</label>
+      <input id="zoom" type="range" min="1" max="2.5" step="0.05" value="1">
+      <div class="controls">
+        <button id="backBtn" class="secondary">Kembali</button>
+        <button id="captureBtn" class="primary">Ambil Gambar · 3s</button>
+      </div>
+    </section>
+
+    <section id="result" class="panel hidden">
+      <h2>Kenangan Diraja Anda!</h2>
+      <img id="resultImage" class="result-image" alt="Gambar dengan bingkai Royal Fairytale">
+      <p id="saveStatus" class="small muted">Gambar anda telah disediakan.</p>
+      <div class="controls">
+        <button id="retakeBtn" class="secondary">Ambil Semula</button>
+        <button id="downloadBtn" class="primary">Muat Turun Gambar</button>
+      </div>
+      <p class="small muted">Jika menggunakan iPhone, buka gambar selepas dimuat turun dan pilih Share → Save Image.</p>
+      <button id="homeBtn" class="secondary">Kembali ke Menu Utama</button>
+    </section>
+
+    <footer>✦ KEMAS STAR AWARDS 2026 · Royal Fairytale ✦</footer>
+  </main>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
