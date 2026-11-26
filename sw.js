@@ -1,5 +1,40 @@
-const CACHE="kemas-royal-fairytale-v1";
-const FILES=["./","./index.html","./style.css","./app.js","./config.js","./manifest.json","./assets/frame-purple-portrait.png","./assets/frame-purple-landscape.png","./assets/frame-blue-portrait.png","./assets/frame-blue-landscape.png","./assets/icon.svg"];
-self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
-self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
-self.addEventListener("fetch",e=>e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request))));
+
+const CACHE = "kemas-royal-fairytale-v2";
+
+const FILES = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./config.js",
+  "./manifest.json",
+  "./frame-purple-portrait.png",
+  "./frame-purple-landscape.png",
+  "./frame-blue-portrait.png",
+  "./frame-blue-landscape.png",
+  "./icon.svg"
+];
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(FILES))
+  );
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(key => key !== CACHE).map(key => caches.delete(key))
+      )
+    )
+  );
+});
+
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(
+      cached => cached || fetch(event.request)
+    )
+  );
+});
