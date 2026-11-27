@@ -26,6 +26,87 @@ const frames = {
 };
 let theme="purple", orientation="portrait", stream=null, facing="user", galleryFile=null, deferredInstall=null, resultUrl=null;
 const $=id=>document.getElementById(id);
+let panX=0, panY=0, zoomLevel=1;
+const activePointers=new Map();
+let gesture=null;
+
+function applyPhotoTransform(){
+  const t=`translate(${panX}px,${panY}px) scale(${zoomLevel})`;
+  $("video").style.transform=t;
+  $("galleryPreview").style.transform=t;
+}
+
+function limitPan(){
+  const win=$("photoWindow");
+  const maxX=win.clientWidth*(zoomLevel-1)/2;
+  const maxY=win.clientHeight*(zoomLevel-1)/2;
+  panX=Math.max(-maxX,Math.min(maxX,panX));
+  panY=Math.max(-maxY,Math.min(maxY,panY));
+}
+
+function resetPhotoPosition(){
+  panX=0;
+  panY=0;
+  zoomLevel=1;
+  $("zoom").value=1;
+  applyPhotoTransform();
+}
+
+const photoWindow=$("photoWindow");
+
+photoWindow.addEventListener("pointerdown",e=>{
+  if(e.pointerType==="mouse" && e.button!==0)return;
+  photoWindow.setPointerCapture(e.pointerId);
+  activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+
+  if(activePointers.size===1){
+    gesture={mode:"drag",x:e.clientX,y:e.clientY,panX,panY};
+  }else if(activePointers.size===2){
+    const p=[...activePointers.values()];
+    gesture={
+      mode:"pinch",
+      distance:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),
+      zoom:zoomLevel
+    };
+  }
+});
+
+photoWindow.addEventListener("pointermove",e=>{
+  if(!activePointers.has(e.pointerId))return;
+  activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+
+  if(activePointers.size===1 && gesture?.mode==="drag"){
+    panX=gesture.panX+e.clientX-gesture.x;
+    panY=gesture.panY+e.clientY-gesture.y;
+    limitPan();
+    applyPhotoTransform();
+  }
+
+  if(activePointers.size===2 && gesture?.mode==="pinch"){
+    const p=[...activePointers.values()];
+    const distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+    zoomLevel=Math.max(1,Math.min(2.5,
+      gesture.zoom*distance/Math.max(1,gesture.distance)
+    ));
+    $("zoom").value=zoomLevel;
+    limitPan();
+    applyPhotoTransform();
+  }
+});
+
+function endPhotoPointer(e){
+  activePointers.delete(e.pointerId);
+
+  if(activePointers.size===1){
+    const p=[...activePointers.values()][0];
+    gesture={mode:"drag",x:p.x,y:p.y,panX,panY};
+  }else{
+    gesture=null;
+  }
+}
+
+photoWindow.addEventListener("pointerup",endPhotoPointer);
+photoWindow.addEventListener("pointercancel",endPhotoPointer);
 function selected(){return frames[theme][orientation]}
 function frameUrl(){return selected().src}
 function show(id){["home","camera","result"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
@@ -51,7 +132,11 @@ $("backBtn").onclick=()=>{stopCamera();show("home");};
 $("switchBtn").onclick=async()=>{facing=facing==="user"?"environment":"user";await startCamera();};
 $("galleryBtn").onclick=()=>$("galleryInput").click();
 $("galleryInput").onchange=e=>{const f=e.target.files[0];if(!f)return;galleryFile=f;const u=URL.createObjectURL(f);$("galleryPreview").src=u;$("galleryPreview").classList.remove("hidden");$("video").classList.add("hidden");$("cameraStatus").textContent="Foto galeri dipilih.";};
-$("zoom").oninput=()=>{const z=Number($("zoom").value);$("video").style.transform=`scale(${z})`;$("galleryPreview").style.transform=`scale(${z})`;};
+$("zoom").oninput=()=>{
+  zoomLevel=Number($("zoom").value)||1;
+  limitPan();
+  applyPhotoTransform();
+};
 function loadImage(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
 async function makeComposite(){
   const cfg=selected(), frame=await loadImage(cfg.src);
@@ -67,7 +152,10 @@ async function makeComposite(){
   // Match the preview: fill the photo window, preserving the 4:3 source and centered crop.
   const pw=photo.videoWidth||photo.naturalWidth, ph=photo.videoHeight||photo.naturalHeight;
   const scale=Math.max(W/pw,H/ph)*Number($("zoom").value);
-  const sw=W/scale, sh=H/scale, sx=(pw-sw)/2, sy=(ph-sh)/2;
+  const sw=W/scale, sh=H/scale;
+const win=$("photoWindow");
+const sx=(pw-sw)/2 - panX*(W/win.clientWidth)/scale;
+const sy=(ph-sh)/2 - panY*(H/win.clientHeight)/scale;
   ctx.drawImage(photo,sx,sy,sw,sh,X,Y,W,H);
   ctx.drawImage(frame,0,0,canvas.width,canvas.height);
   return await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",0.94));
